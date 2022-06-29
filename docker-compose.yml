@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  mssql-arm64:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    healthcheck:
+      test: ["CMD-SHELL", 'sqlcmd -U sa -d master -Q "SELECT 1" || exit 1']
+      interval: 10s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+    volumes:
+      - ./mssql:/var/opt/mssql
+    ports:
+      - 1433:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Passw@rd
+      - MSSQL_PID=Developer
+      - MSSQL_USER=sa
+      - MSSQL_PASSWORD=Passw@rd
+      - SQLCMDPASSWORD=Passw@rd # used for sqlcmd
+
+  python-amd64:
+    depends_on:
+      mssql-arm64:
+        condition: service_healthy
+    build:
+      context: ./example
+      dockerfile: Dockerfile.python
+    platform: linux/amd64
+
+volumes:
+  mssql: null

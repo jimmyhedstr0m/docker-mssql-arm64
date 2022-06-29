@@ -1,0 +1,15 @@
+FROM python:3.9
+
+WORKDIR /code
+
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+    apt-get update && ACCEPT_EULA=Y DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    unixodbc-dev \
+    msodbcsql17
+
+RUN pip install pyodbc
+
+COPY main.py /code
+
+CMD [ "python", "main.py" ]
