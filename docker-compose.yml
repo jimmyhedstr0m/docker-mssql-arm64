@@ -30,6 +30,8 @@ services:
       context: ./example
       dockerfile: Dockerfile.python
     platform: linux/amd64
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   mssql: null
